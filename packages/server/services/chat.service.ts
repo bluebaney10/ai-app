@@ -1,7 +1,6 @@
 import OpenAI from 'openai';
 import { conversationRepository } from '../repositories/conversation.repository';
 
-//implementation detail
 const client = new OpenAI({
    apiKey: process.env.OPENAI_API_KEY,
 });
@@ -11,8 +10,6 @@ type ChatResponse = {
    message: string;
 };
 
-//public interface
-//Leaky abstraction
 export const chatService = {
    async sendMessage(
       prompt: string,
@@ -22,7 +19,7 @@ export const chatService = {
          model: 'gpt-4o-mini',
          input: prompt,
          temperature: 0.2,
-         max_output_tokens: 100,
+         max_output_tokens: 200,
          previous_response_id:
             conversationRepository.getLastResponseId(conversationId),
       });
