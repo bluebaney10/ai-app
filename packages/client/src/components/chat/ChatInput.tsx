@@ -28,7 +28,7 @@ const ChatInput = ({ onSubmit }: Props) => {
 
    return (
       <form
-         onSubmit={handleFormSubmit}
+         onSubmit={submit}
          onKeyDown={handleKeyDown}
          className="flex flex-col gap-2 items-end border-2 p-4 rounded-3xl"
       >
