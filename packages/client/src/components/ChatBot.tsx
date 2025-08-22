@@ -50,7 +50,14 @@ const ChatBot = () => {
       if (e.key === 'Enter' && !e.shiftKey) {
          e.preventDefault();
          handleSubmit(onSubmit)();
-         //handleSubmit return a function so we have to explicitly call that function
+      }
+   };
+
+   const onCopyMessage = (e: React.ClipboardEvent) => {
+      const selection = window.getSelection()?.toString().trim();
+      if (selection) {
+         e.preventDefault();
+         e.clipboardData.setData('text/plain', selection);
       }
    };
 
@@ -60,6 +67,7 @@ const ChatBot = () => {
             {messages.map((message, index) => (
                <p
                   key={index}
+                  onCopy={onCopyMessage}
                   className={`px-3 py-1 rounded-xl
                      ${
                         message.role === 'user'
