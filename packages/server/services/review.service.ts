@@ -13,13 +13,16 @@ export const reviewService = {
 
       const prompt = template.replace('{{reviews}}', joinedReviews);
 
-      const response = await llmClient.generateText({
+      //destructure text => name summary
+      const { text: summary } = await llmClient.generateText({
          model: 'gpt-4.1',
          prompt,
          temperature: 0.2,
          maxTokens: 500,
       });
 
-      return response.text;
+      await reviewRepository.storeReviewSummary(productId, summary);
+
+      return summary;
    },
 };
