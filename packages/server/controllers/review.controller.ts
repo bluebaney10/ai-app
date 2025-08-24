@@ -11,8 +11,17 @@ export const reviewController = {
          return res.status(400).json({ error: 'Invalid product ID' });
       }
 
-      const reviews = await reviewService.getReviews(productId);
-      res.json(reviews);
+      const product = await productRepository.getProduct(productId);
+      if (!product) {
+         return res.status(404).json({ error: 'Product does not exist' });
+      }
+
+      const reviews = await reviewRepository.getReviews(productId);
+      const summary = await reviewRepository.getReviewSummary(productId);
+      res.json({
+         summary: summary,
+         reviews,
+      });
    },
 
    async summarizeReviews(req: Request, res: Response) {
