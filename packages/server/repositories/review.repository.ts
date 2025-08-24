@@ -22,11 +22,15 @@ export const reviewRepository = {
          productId,
       };
 
-      //like combination between insert and update
       prisma.summary.upsert({
          where: { productId },
          create: data,
          update: data,
+      });
+   },
+   getReviewSummary(productId: number) {
+      return prisma.summary.findUnique({
+         where: { productId },
       });
    },
 };
