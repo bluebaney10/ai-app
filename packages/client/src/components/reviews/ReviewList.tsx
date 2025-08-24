@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import StarRating from './StarRating';
+import { set } from 'react-hook-form';
 
 type Props = {
    productId: number;
@@ -23,14 +24,23 @@ type GetReviewResponse = {
 const ReviewList = ({ productId }: Props) => {
    const [reviewData, setReviewData] = useState<GetReviewResponse | null>(null);
    const [isLoading, setIsLoading] = useState(false);
+   const [error, setError] = useState('');
 
    const fetchReviews = async () => {
-      setIsLoading(true);
-      const { data } = await axios.get<GetReviewResponse>(
-         `/api/products/${productId}/reviews`
-      );
-      setReviewData(data);
-      setIsLoading(false);
+      try {
+         setError('');
+         setIsLoading(true);
+         const { data } = await axios.get<GetReviewResponse>(
+            `/api/products/${productId}/reviews`
+         );
+         setReviewData(data);
+         setIsLoading(false);
+      } catch (error) {
+         console.error(error);
+         setError('Could not fetch reviews. Try again!');
+      } finally {
+         setIsLoading(false);
+      }
    };
 
    useEffect(() => {
@@ -49,6 +59,10 @@ const ReviewList = ({ productId }: Props) => {
             ))}
          </div>
       );
+   }
+
+   if (error) {
+      return <p className="text-red-500">{error}</p>;
    }
 
    return (
