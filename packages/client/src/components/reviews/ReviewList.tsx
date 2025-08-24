@@ -1,7 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import Skeleton from 'react-loading-skeleton';
+import { HiSparkles } from 'react-icons/hi2';
 import StarRating from './StarRating';
+import { Button } from '../ui/button';
+import { useState } from 'react';
+import { set } from 'react-hook-form';
 
 type Props = {
    productId: number;
@@ -20,7 +24,13 @@ type GetReviewResponse = {
    reviews: Review[];
 };
 
+type summarizeResponse = {
+   summary: string;
+};
+
 const ReviewList = ({ productId }: Props) => {
+   const [summary, setSummary] = useState('');
+
    const {
       data: reviewData,
       isLoading,
@@ -29,6 +39,13 @@ const ReviewList = ({ productId }: Props) => {
       queryKey: ['reviews', productId],
       queryFn: () => fetchReviews(),
    });
+
+   const handleSummarize = async () => {
+      const { data } = await axios.post<summarizeResponse>(
+         `/api/products/${productId}/reviews/summarize`
+      );
+      setSummary(data.summary);
+   };
 
    const fetchReviews = async () => {
       const { data } = await axios.get<GetReviewResponse>(
@@ -57,17 +74,35 @@ const ReviewList = ({ productId }: Props) => {
       );
    }
 
+   if (!reviewData?.reviews.length) {
+      return null;
+   }
+
+   const currentSummary = reviewData?.summary || summary;
+
    return (
-      <div className="flex flex-col gap-5">
-         {reviewData?.reviews.map((review) => (
-            <div key={review.id}>
-               <h3 className="font-semibold">{review.author}</h3>
-               <div>
-                  <StarRating value={review.rating} />
+      <div>
+         <div className="mb-5 ">
+            {currentSummary ? (
+               <p>{currentSummary}</p>
+            ) : (
+               <Button onClick={handleSummarize}>
+                  <HiSparkles />
+                  Sumarize
+               </Button>
+            )}
+         </div>
+         <div className="flex flex-col gap-5">
+            {reviewData?.reviews.map((review) => (
+               <div key={review.id}>
+                  <h3 className="font-semibold">{review.author}</h3>
+                  <div>
+                     <StarRating value={review.rating} />
+                  </div>
+                  <p className="py-2">{review.content}</p>
                </div>
-               <p className="py-2">{review.content}</p>
-            </div>
-         ))}
+            ))}
+         </div>
       </div>
    );
 };
